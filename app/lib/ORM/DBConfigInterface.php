@@ -14,7 +14,7 @@ interface DBConfigInterface
 	public function _fetchObject();
 	public function _affectedRows();
 	public function _lastID();
-        public function _multipleID($_size);
+    public function _multipleID($_size);
 	public function _freeResult();
 }
 ?>
