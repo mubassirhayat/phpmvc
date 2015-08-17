@@ -3,6 +3,11 @@
 namespace ORM;
 
 use \Config;
+use \ORM\OracleDB;
+use \ORM\PostgreDB;
+use \ORM\SqliteDB;
+use \ORM\MSSqlDB;
+use \ORM\MySqlDB;
 
 class DBManager
 {
@@ -20,7 +25,7 @@ class DBManager
 	*/
 	public function __construct()
 	{
-		switch(Config::$DB['DRIVER')
+		switch(Config::$DB['DRIVER'])
 		{
 			case 'ORACLE':
 				$this->_dataObject = OracleDB::_getInstance();
@@ -37,7 +42,7 @@ class DBManager
 			case 'MSSQL':
 				$this->_dataObject = MSSqlDB::_getInstance();
 			break;
-			
+
 			case 'MYSQL':
 			default:
 				$this->_dataObject = MySqlDB::_getInstance();

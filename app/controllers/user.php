@@ -5,7 +5,7 @@
 */
 class User extends Controller
 {
-	
+
 	function __construct()
 	{
 		parent::__construct();
@@ -15,14 +15,16 @@ class User extends Controller
 	{
 		$userModel = $this->model('UserModel');
 
-		if ($user) 
+		if ($user)
 		{
 			$user = $userModel->get($user);
 		}
-
+		// echo "<pre>";
+		// var_dump($user[0]['name']);
+		// echo "</pre>";
 		$this->view('template/header');
 		$this->view('template/nav');
-		$this->view('user/index', ['user' => $user]);
+		$this->view('user/index', ['user' => $user[0]]);
 		$this->view('template/footer');
 	}
-} 
+}

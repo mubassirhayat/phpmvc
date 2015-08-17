@@ -5,6 +5,10 @@
 */
 class UserModel extends Model
 {
+	private $_sqlQuery = NULL;
+
+	private $_result = NULL;
+
 	public function __construct()
 	{
 		parent::__construct();
@@ -13,9 +17,9 @@ class UserModel extends Model
 	public function get($id)
 	{
 		$id = (int)$id;
+		$this->_sqlQuery = "SELECT * FROM students WHERE id = {$id}";
 
-		$user = $this->db->query("SELECT * FROM students WHERE id = {$id}");
+		return $this->_dataObject->_executeSql($this->_sqlQuery)->_fetchAssoc();
 
-		return $user->fetch(PDO::FETCH_OBJ);
 	}
 }

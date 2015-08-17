@@ -1,15 +1,15 @@
 <?php
-use \ORM\DbConnection;
+use \ORM\DBManager;
 /**
 * Main Model class
 */
-class Model
+class Model extends DBManager
 {
 	protected $db;
 
 	public function __construct()
 	{
-		$this->db = DbConnection::getInstance();
+		parent::__construct();
 		// $this->db = $this->dbConnection->getDb();
 	}
 }
