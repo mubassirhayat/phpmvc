@@ -5,7 +5,7 @@
 */
 class Home extends Controller
 {
-	
+
 	function __construct()
 	{
 		parent::__construct();
@@ -17,9 +17,9 @@ class Home extends Controller
 
 		$home = $homeModel->index();
 
-		$this->view('template/header');
-		$this->view('template/nav');
+		$this->view('template/coverHeader');
+		$this->view('template/coverNav');
 		$this->view('home/index', ['home' => $home]);
-		$this->view('template/footer');
+		$this->view('template/coverFooter');
 	}
-} 
+}

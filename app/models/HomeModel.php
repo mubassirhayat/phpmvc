@@ -9,10 +9,9 @@ class HomeModel extends Model
 	{
 		parent::__construct();
 	}
-	
+
 	public function index()
 	{
 		// Bussiness Logic here
-		return "Some business logic";
 	}
 }
