@@ -50,6 +50,7 @@ class App
 	{
 		if (isset($_GET['url']))
 		{
+			// detrmine controller and action here
 			return explode('/', filter_var(rtrim($_GET['url'], '/'), FILTER_SANITIZE_URL));
 		}
 	}
