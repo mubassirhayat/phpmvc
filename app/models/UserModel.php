@@ -1,5 +1,6 @@
 <?php
 
+use \ORM\QueryBuilder\SQLBuilder;
 /**
 * User class
 */
@@ -17,9 +18,15 @@ class UserModel extends Model
 	public function get($id)
 	{
 		$id = (int)$id;
-		$this->_sqlQuery = "SELECT * FROM students WHERE id = {$id}";
-
-		return $this->_dataObject->_executeSql($this->_sqlQuery)->_fetchAssoc();
+		$this->_sqlQuery = new SQLBuilder();
+		$this->_sqlQuery->select->table('students');
+		$this->_sqlQuery->select->cols('*');
+		$this->_sqlQuery->select->where('id=' . $id);
+		$this->_sqlQuery->select->limit(1);
+		// echo "<pre>";
+		// var_dump($this->_sqlQuery->select->sql());
+		// echo "</pre>";
+		return $this->_dataObject->_executeSql($this->_sqlQuery->select->sql())->_fetchAssoc();
 
 	}
 }
