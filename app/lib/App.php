@@ -37,6 +37,7 @@ class App
 				// unset($url[1]);
 			} else {
 				$this->action = 'error404';
+				// var_dump($this->action);
 				// unset($url[1]);
 			}
 		}
