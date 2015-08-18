@@ -27,6 +27,5 @@ class UserModel extends Model
 		// var_dump($this->_sqlQuery->select->sql());
 		// echo "</pre>";
 		return $this->_dataObject->_executeSql($this->_sqlQuery->select->sql())->_fetchAssoc();
-
 	}
 }
