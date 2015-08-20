@@ -3,8 +3,8 @@
 namespace RequestHandler;
 
 class RequestHandler {
-	public $controller_name;
-	public $action_name;
+	public $controllerName;
+	public $actionName;
 	public $valid = false;
 	public $params = array();
 	public $referer;
@@ -14,15 +14,15 @@ class RequestHandler {
 
 	public function __construct($routes, $app_root = ROOT ) {
 		$this->routes = $routes;
-		$route = $this->get_route($routes, $app_root);
+		$route = $this->getRoute($routes, $app_root);
 		if(is_array($route)) {
 			if(isset($route['redirect'])){
 				if(!isset($route[0])) $route[0] = null;
 				self::redirect($route['redirect'],$route[0]);
 			}
 
-			$this->controller_name = $route[0];
-			$this->action_name = $route[1] ? $route[1] : 'index';
+			$this->controllerName = $route[0];
+			$this->actionName = $route[1] ? $route[1] : 'index';
 			$this->params = array_merge($this->params, $_GET, $_POST);
 			if(isset($_SERVER['HTTP_REFERER'])) $this->referer = $_SERVER['HTTP_REFERER'];
 			$this->uri = $_SERVER['REQUEST_URI'];
@@ -30,22 +30,22 @@ class RequestHandler {
 		}
 	}
 
-	public function set_action_name($name) {
-		$this->action_name = $name;
+	public function setActionName($name) {
+		$this->actionName = $name;
 	}
 
-	public function set_controller_name($name) {
-		$this->controller_name = $name;
+	public function setControllerName($name) {
+		$this->controllerName = $name;
 	}
 
-	public function get_route($route, $app_root) {
+	public function getRoute($route, $app_root) {
 
 		$this->method = (isset($_REQUEST['_method']) && strtolower($_SERVER['REQUEST_METHOD']) == 'post') ? strtolower($_REQUEST['_method']) : strtolower($_SERVER['REQUEST_METHOD']);
 
 		$subfolder = str_replace($_SERVER['DOCUMENT_ROOT'], '', str_replace('\\','/',$app_root));
 		$uri = str_replace($subfolder,'', $_SERVER['REQUEST_URI']);
 		$uri = explode('?',$uri);
-		$uri[0] = $this->strip_slash($uri[0]);
+		$uri[0] = $this->stripSlash($uri[0]);
 
 		if($uri[0] === '' || $uri[0] === '/index.php') {
 			if(isset($route[$this->method]['/'])) return $route[$this->method]['/'];
@@ -71,8 +71,8 @@ class RequestHandler {
 			$uri_parts = explode('/', $uri[0]);
 
 			foreach ($route_list as $route => $values) {
-				$route = $this->strip_slash(substr($route,1));
-				$route_parts = explode('/', $this->strip_slash($route));
+				$route = $this->stripSlash(substr($route,1));
+				$route_parts = explode('/', $this->stripSlash($route));
 
 				if(!$route) continue;
 
@@ -114,14 +114,14 @@ class RequestHandler {
 		$named_route = str_replace('_path','',$name);
 
 		if(substr($name,-5,strlen($name)-1) === '_path') {
-			return $this->url_for($named_route,$arguments);
+			return $this->urlFor($named_route,$arguments);
 		}else{
 			trigger_error('Method '.$name.' not exist');
 		}
 	}
 
 
-	public function url_for($named_route,$params = array()) {
+	public function urlFor($named_route,$params = array()) {
 
 		$route_list = array();
 		if(isset($this->routes['*'])) $route_list = $this->routes['*'];
@@ -174,7 +174,7 @@ class RequestHandler {
 		if($exit) die;
 	}
 
-	protected function strip_slash($str) {
+	protected function stripSlash($str) {
 		if($str[strlen($str)-1]==='/'){
 			$str = substr($str,0,-1);
 		}
