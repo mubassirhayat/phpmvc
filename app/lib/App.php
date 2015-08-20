@@ -1,5 +1,6 @@
 <?php
 
+use \RequestHandler\RequestHandler;
 /**
 *
 */
@@ -13,18 +14,12 @@ class App
 
 	public function __construct()
 	{
-		$url = $this->parseUrl();
-		if (isset($url[0])) {
-			if (file_exists('../app/controllers/' . $url[0] . '.php'))
-			{
-				$this->controller = $url[0];
-				// unset($url[0]);
-			} else {
-				# code...
-				$this->controller = 'error';
-				// unset($url[0]);
-			}
-		}
+		$request = new RequestHandler();
+		$url = $_GET['url'];
+		var_dump($_GET['controller']);
+		$this->controller = $request->getControllerFromURL($url);
+		die();
+		// $this->action = ;
 
 		require_once '../app/controllers/' . $this->controller . '.php';
 		$this->controller = new $this->controller();
@@ -44,14 +39,5 @@ class App
 
 		$this->parameters = $url ? array_values($url) : [];
 		call_user_func_array([$this->controller, $this->action], $this->parameters);
-	}
-
-	protected function parseUrl()
-	{
-		if (isset($_GET['url']))
-		{
-			// detrmine controller and action here
-			return explode('/', filter_var(rtrim($_GET['url'], '/'), FILTER_SANITIZE_URL));
-		}
 	}
 }

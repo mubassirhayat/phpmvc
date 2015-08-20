@@ -3,182 +3,39 @@
 namespace RequestHandler;
 
 class RequestHandler {
-	public $controllerName;
-	public $actionName;
-	public $valid = false;
-	public $params = array();
-	public $referer;
-	public $uri;
-	public $method;
-	public $routes;
 
-	public function __construct($routes, $app_root = ROOT ) {
-		$this->routes = $routes;
-		$route = $this->getRoute($routes, $app_root);
-		if(is_array($route)) {
-			if(isset($route['redirect'])){
-				if(!isset($route[0])) $route[0] = null;
-				self::redirect($route['redirect'],$route[0]);
-			}
+    protected $controller = '';
 
-			$this->controllerName = $route[0];
-			$this->actionName = $route[1] ? $route[1] : 'index';
-			$this->params = array_merge($this->params, $_GET, $_POST);
-			if(isset($_SERVER['HTTP_REFERER'])) $this->referer = $_SERVER['HTTP_REFERER'];
-			$this->uri = $_SERVER['REQUEST_URI'];
-			$this->valid = true;
-		}
-	}
+	protected $action = '';
 
-	public function setActionName($name) {
-		$this->actionName = $name;
-	}
+    protected $defaultController = 'home';
 
-	public function setControllerName($name) {
-		$this->controllerName = $name;
-	}
+    protected $defaultAction = 'index';
 
-	public function getRoute($route, $app_root) {
+	protected $parameters = [];
 
-		$this->method = (isset($_REQUEST['_method']) && strtolower($_SERVER['REQUEST_METHOD']) == 'post') ? strtolower($_REQUEST['_method']) : strtolower($_SERVER['REQUEST_METHOD']);
-
-		$subfolder = str_replace($_SERVER['DOCUMENT_ROOT'], '', str_replace('\\','/',$app_root));
-		$uri = str_replace($subfolder,'', $_SERVER['REQUEST_URI']);
-		$uri = explode('?',$uri);
-		$uri[0] = $this->stripSlash($uri[0]);
-
-		if($uri[0] === '' || $uri[0] === '/index.php') {
-			if(isset($route[$this->method]['/'])) return $route[$this->method]['/'];
-			if(isset($route['*']['/'])) return $route['*']['/'];
-		}else{
-
-			$route_list = array();
-			if(isset($route['*'])) $route_list = $route['*'];
-
-			if(isset($route[$this->method])) {
-				$route_list = array_merge($route_list, $route[$this->method]);
-			}
-
-            if(empty($route_list)) return false;
-
-			if(isset($route_list[$uri[0]])) {
-				return $route_list[$uri[0]];
-			}else if(isset($route_list[$uri[0].'/'])) {
-				return $route_list[$uri[0].'/'];
-			}
-
-			$uri[0] = substr($uri[0],1);
-			$uri_parts = explode('/', $uri[0]);
-
-			foreach ($route_list as $route => $values) {
-				$route = $this->stripSlash(substr($route,1));
-				$route_parts = explode('/', $this->stripSlash($route));
-
-				if(!$route) continue;
-
-				if(sizeof($uri_parts) !== sizeof($route_parts) ) continue;
-
-				$static = explode(':',$route);
-				if(substr($uri[0],0,strlen($static[0]))!==$static[0]) continue;
-
-				preg_match_all('@:([\w]+)@', $route, $params_name, PREG_PATTERN_ORDER);
-
-				$params_name = $params_name[0];
-
-				if(!count($params_name)) continue;
-
-				$route_regex = $route;
-				$route_regex = str_replace('/','\/',$route_regex);
-
-				foreach ($params_name as $name) {
-					$regex = '[.a-zA-Z0-9_\+\-%]';
-					if (isset($values[$name])) $regex = $values[$name];
-
-					$route_regex = preg_replace('/'.$name.'/','('.$regex.'+)',$route_regex,1);
-				}
-
-				if(preg_match('/'.$route_regex.'/' , $uri[0], $matches) === 1){
-					array_shift($matches);
-					foreach ($params_name as $key => $value) {
-						$this->params[substr($value,1)] = $matches[$key];
-					}
-					return $values;
-				}
-			}
-			return false;
-		}
-	}
-
-
-	public function __call($name, $arguments) {
-		$named_route = str_replace('_path','',$name);
-
-		if(substr($name,-5,strlen($name)-1) === '_path') {
-			return $this->urlFor($named_route,$arguments);
-		}else{
-			trigger_error('Method '.$name.' not exist');
-		}
-	}
-
-
-	public function urlFor($named_route,$params = array()) {
-
-		$route_list = array();
-		if(isset($this->routes['*'])) $route_list = $this->routes['*'];
-
-		if(isset($this->routes[$this->method])) {
-			$route_list = array_merge($route_list, $this->routes[$this->method]);
-		}
-		$path = false;
-		foreach ($route_list as $url => $route) {
-			if(isset($route['as']) && $route['as'] == $named_route ) {
-
-				preg_match_all('@:([\w]+)@', $url, $params_name, PREG_PATTERN_ORDER);
-
-				$params_name = $params_name[0];
-
-				if(count($params_name)){
-					if (count($params) != count($params_name)) { die('Named route for '.$named_route.' expects '.count($params_name).' params not '.count($params).'.'); }
-					$route_regex = $url;
-					$route_regex = str_replace('/','\/',$route_regex);
-
-					$i = 0;
-					foreach ($params_name as $name) {
-						$route_regex = preg_replace('/'.$name.'/',$params[$i],$route_regex,1);
-						$i++;
-					}
-					$path = $route_regex;
-				}else{
-					$path = $url;
-				}
+    public function getControllerFromURL($url)
+    {
+        $urlVars = $this->parseUrl($url);
+        if (isset($url[0])) {
+			if (file_exists('../app/controllers/' . $url[0] . '.php'))
+			{
+				$this->controller = $url[0];
+				// unset($url[0]);
+			} else {
+				# code...
+				$this->controller = 'error';
+				// unset($url[0]);
 			}
 		}
+    }
 
-		if(!$path) die('Named route for '.$named_route.' doenst exist.');
-
-		return str_replace('\/','/',$path); ;
-	}
-
-	public static function redirect($location, $code=302, $exit=true, $headerBefore=NULL, $headerAfter=NULL){
-		if($headerBefore!=NULL){
-			for($i=0;$i<sizeof($headerBefore);$i++){
-				header($headerBefore[$i]);
-			}
+    private function parseUrl($url)
+	{
+		if (isset($url))
+		{
+			// detrmine controller and action here
+			return explode('/', filter_var(rtrim($url, '/'), FILTER_SANITIZE_URL));
 		}
-		header("Location: $location", true, $code);
-		if($headerAfter!=NULL){
-			for($i=0;$i<sizeof($headerBefore);$i++){
-				header($headerBefore[$i]);
-			}
-		}
-		if($exit) die;
-	}
-
-	protected function stripSlash($str) {
-		if($str[strlen($str)-1]==='/'){
-			$str = substr($str,0,-1);
-		}
-		return $str;
 	}
 }
-?>
