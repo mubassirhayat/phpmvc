@@ -12,9 +12,15 @@ class RequestHandler {
 
 	protected $parameters = [];
 
-    public function setUrl($url)
+    public function __construct($url)
     {
         $this->url = $url;
+		$this->getControllerFromURL();
+		$this->loadController();
+
+
+		$this->getActionFromURL();
+		$this->loadAction();
     }
     public function getControllerFromURL()
     {
@@ -23,11 +29,11 @@ class RequestHandler {
 			if (file_exists('../app/controllers/' . $this->url[0] . '.php'))
 			{
 				$this->controller = $this->url[0];
-				unset($url[0]);
+				unset($this->url[0]);
 			} else {
 				# code...
 				$this->controller = 'error';
-				unset($url[0]);
+				unset($this->url[0]);
 			}
 		} else {
             $this->controller = 'home';
@@ -48,11 +54,11 @@ class RequestHandler {
 			if (method_exists($this->controller, $this->url[1]))
 			{
 				$this->action = $this->url[1];
-				unset($url[1]);
+				unset($this->url[1]);
 			} else {
 				$this->action = 'error404';
 				// var_dump($this->action);
-				unset($url[1]);
+				unset($this->url[1]);
 			}
 		} else {
             $this->action = 'index';

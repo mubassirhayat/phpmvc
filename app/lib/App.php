@@ -6,18 +6,14 @@ use \RequestHandler\RequestHandler;
 */
 class App
 {
+	protected $url = '';
 	public function __construct()
 	{
-		$url = $_GET['url'];
+		$this->url = $_GET['url'];
 
-		$request = new RequestHandler();
-		$request->setUrl($url);
-
-		$request->getControllerFromURL();
-		$request->loadController();
-
-
-		$request->getActionFromURL();
-		$request->loadAction();
+		$request = new RequestHandler($this->url);
+		// echo "<pre align='left'>";
+		// var_dump($request);
+		// echo "</pre><br><br><br><br><br><br>";
 	}
 }
