@@ -4,23 +4,21 @@ namespace RequestHandler;
 
 class RequestHandler {
 
-    protected $controller = '';
+    public $controller = '';
 
-	protected $action = '';
+	public $action = '';
 
     protected $url = '';
 
-	protected $parameters = [];
+	public $parameters = [];
 
     public function __construct($url)
     {
         $this->url = $url;
 		$this->getControllerFromURL();
-		$this->loadController();
 
 
 		$this->getActionFromURL();
-		$this->loadAction();
     }
     public function getControllerFromURL()
     {
@@ -39,12 +37,6 @@ class RequestHandler {
             $this->controller = 'home';
         }
         return $this->controller;
-    }
-
-    public function loadController()
-    {
-        require_once '../app/controllers/' . $this->controller . '.php';
-		$this->controller = new $this->controller();
     }
 
     public function getActionFromURL()
@@ -66,10 +58,9 @@ class RequestHandler {
         return $this->action;
     }
 
-    public function loadAction()
+    public function getParametersFromURL()
     {
         $this->parameters = $this->url ? array_values($this->url) : [];
-		call_user_func_array([$this->controller, $this->action], $this->parameters);
     }
 
     private function parseUrl($url)

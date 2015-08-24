@@ -25,4 +25,16 @@ class Controller
 	{
 		// Do all the actions here
 	}
+
+	// public function error404()
+	// {
+	// 	$errorModel = self::model('ErrorModel');
+	//
+	// 	$error = $errorModel->error404();
+	//
+	// 	self::view('template/header');
+	// 	self::view('template/nav');
+	// 	self::view('error/error404', ['error' => $error]);
+	// 	self::view('template/footer');
+	// }
 }
