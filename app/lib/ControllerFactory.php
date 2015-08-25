@@ -8,7 +8,10 @@ class ControllerFactory
 {
     public static function create($controller)
     {
-        require_once '../app/controllers/' . $controller . '.php';
-        return new $controller;
+        if(file_exists('../app/controllers/' . $controller . '.php')){
+            require_once '../app/controllers/' . $controller . '.php';
+            return new $controller;
+        }
+
     }
 }
