@@ -5,6 +5,7 @@
 */
 class Controller
 {
+	protected $action;
 	public function __construct()
 	{
 
@@ -23,6 +24,11 @@ class Controller
 
 	public function doAction($action, $paramerters)
 	{
-		$this->$action($paramerters);
+		$this->action = $action;
+		if(method_exists($this, $action)){
+			$this->$action($paramerters);
+		} else {
+			header('Location: ' . ASSET_ROOT . '/error/error404');
+		}
 	}
 }

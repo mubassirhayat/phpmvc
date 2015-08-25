@@ -16,7 +16,7 @@ class App
 
 		$this->request = new RequestHandler($this->url);
 
-		$factory = ControllerFactory::create($this->request->controller);
-		$factory->doAction($this->request->action, $this->request->parameters);
+		$controller = ControllerFactory::create($this->request->controller);
+		$controller->doAction($this->request->action, $this->request->parameters);
 	}
 }

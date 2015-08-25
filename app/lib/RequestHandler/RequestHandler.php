@@ -43,15 +43,8 @@ class RequestHandler {
     {
         if (isset($this->url[1]))
 		{
-			if (method_exists($this->controller, $this->url[1]))
-			{
-				$this->action = $this->url[1];
-				unset($this->url[1]);
-			} else {
-				$this->action = 'error404';
-				// var_dump($this->action);
-				unset($this->url[1]);
-			}
+            $this->action = $this->url[1];
+			unset($this->url[1]);
 		} else {
             $this->action = 'index';
         }
