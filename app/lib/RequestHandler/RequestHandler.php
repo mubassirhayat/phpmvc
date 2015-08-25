@@ -17,8 +17,9 @@ class RequestHandler {
         $this->url = $url;
 		$this->getControllerFromURL();
 
-
 		$this->getActionFromURL();
+
+        $this->getParametersFromURL();
     }
     public function getControllerFromURL()
     {

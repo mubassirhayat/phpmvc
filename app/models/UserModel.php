@@ -15,17 +15,16 @@ class UserModel extends Model
 		parent::__construct();
 	}
 
-	public function get($id)
+	public function get($user)
 	{
-		$id = (int)$id;
+		$id = (int)$user[0];
+
 		$this->_sqlQuery = new SQLBuilder();
 		$this->_sqlQuery->select->table('students');
 		$this->_sqlQuery->select->cols('*');
 		$this->_sqlQuery->select->where('id=' . $id);
 		$this->_sqlQuery->select->limit(1);
-		// echo "<pre>";
-		// var_dump($this->_sqlQuery->select->sql());
-		// echo "</pre>";
+
 		return $this->_dataObject->_executeSql($this->_sqlQuery->select->sql())->_fetchAssoc();
 	}
 }

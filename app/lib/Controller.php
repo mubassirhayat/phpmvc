@@ -25,6 +25,7 @@ class Controller
 	public function doAction($action, $paramerters)
 	{
 		$this->action = $action;
+
 		if(method_exists($this, $action)){
 			$this->$action($paramerters);
 		} else {
